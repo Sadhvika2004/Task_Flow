@@ -1,0 +1,250 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TaskFlow Design System - Warm, approachable productivity */
+
+@layer base {
+  :root {
+    /* Core background and text */
+    --background: 36 100% 99%;
+    --foreground: 235 16% 24%;
+
+    /* Card system */
+    --card: 0 0% 100%;
+    --card-foreground: 235 16% 24%;
+
+    /* Popover system */
+    --popover: 0 0% 100%;
+    --popover-foreground: 235 16% 24%;
+
+    /* Warm Peach Primary */
+    --primary: 12 100% 84%;
+    --primary-foreground: 235 16% 24%;
+    --primary-glow: 12 100% 88%;
+
+    /* Soft Teal Secondary */
+    --secondary: 176 52% 64%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-glow: 176 52% 74%;
+
+    /* Soft Violet Accent */
+    --accent: 230 35% 84%;
+    --accent-foreground: 235 16% 24%;
+    --accent-glow: 230 35% 88%;
+
+    /* Muted warm grays */
+    --muted: 36 28% 96%;
+    --muted-foreground: 235 8% 52%;
+
+    /* Destructive warm red */
+    --destructive: 0 84% 72%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Warm borders and inputs */
+    --border: 36 28% 92%;
+    --input: 36 28% 94%;
+    --ring: 12 100% 84%;
+
+    /* Design system spacing */
+    --radius: 0.5rem;
+    --radius-card: 0.5rem;
+    --radius-button: 0.75rem;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-glow)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-glow)));
+    --gradient-warm: linear-gradient(135deg, hsl(36 100% 98%), hsl(36 100% 96%));
+
+    /* Shadows */
+    --shadow-soft: 0 2px 8px -2px hsl(var(--primary) / 0.1);
+    --shadow-card: 0 4px 12px -4px hsl(var(--primary) / 0.12);
+    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.2);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Core background and text - Dark warm theme */
+    --background: 235 16% 8%;
+    --foreground: 36 100% 95%;
+
+    /* Card system */
+    --card: 235 16% 10%;
+    --card-foreground: 36 100% 95%;
+
+    /* Popover system */
+    --popover: 235 16% 10%;
+    --popover-foreground: 36 100% 95%;
+
+    /* Warm Peach Primary - adjusted for dark */
+    --primary: 12 100% 70%;
+    --primary-foreground: 235 16% 8%;
+    --primary-glow: 12 100% 75%;
+
+    /* Soft Teal Secondary - adjusted for dark */
+    --secondary: 176 52% 50%;
+    --secondary-foreground: 36 100% 95%;
+    --secondary-glow: 176 52% 60%;
+
+    /* Soft Violet Accent - adjusted for dark */
+    --accent: 230 35% 70%;
+    --accent-foreground: 235 16% 8%;
+    --accent-glow: 230 35% 75%;
+
+    /* Muted warm grays - adjusted for dark */
+    --muted: 235 16% 15%;
+    --muted-foreground: 36 28% 70%;
+
+    /* Destructive warm red - adjusted for dark */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 36 100% 95%;
+
+    /* Warm borders and inputs - adjusted for dark */
+    --border: 235 16% 20%;
+    --input: 235 16% 15%;
+    --ring: 12 100% 70%;
+
+    /* Gradients - adjusted for dark */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-glow)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-glow)));
+    --gradient-warm: linear-gradient(135deg, hsl(235 16% 8%), hsl(235 16% 12%));
+
+    /* Shadows - adjusted for dark */
+    --shadow-soft: 0 2px 8px -2px hsl(var(--primary) / 0.2);
+    --shadow-card: 0 4px 12px -4px hsl(var(--primary) / 0.25);
+    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.3);
+
+    /* Sidebar variables for dark theme */
+    --sidebar-background: 235 16% 6%;
+    --sidebar-foreground: 36 100% 95%;
+    --sidebar-primary: 12 100% 70%;
+    --sidebar-primary-foreground: 235 16% 8%;
+    --sidebar-accent: 235 16% 12%;
+    --sidebar-accent-foreground: 36 100% 95%;
+    --sidebar-border: 235 16% 20%;
+    --sidebar-ring: 12 100% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Ensure theme classes are applied to both html and body */
+  html.dark,
+  body.dark {
+    color-scheme: dark;
+  }
+
+  html.light,
+  body.light {
+    color-scheme: light;
+  }
+}
+
+@layer components {
+  /* TaskFlow Custom Components */
+  .card-soft {
+    @apply bg-card rounded-lg shadow-[var(--shadow-card)] border border-border/50;
+  }
+  
+  .button-glow {
+    @apply transition-[var(--transition-smooth)] hover:shadow-[var(--shadow-glow)];
+  }
+  
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+  
+  .gradient-warm {
+    background: var(--gradient-warm);
+  }
+  
+  /* Task Card Priority Indicators */
+  .priority-high {
+    @apply bg-destructive text-destructive-foreground;
+  }
+  
+  .priority-medium {
+    @apply bg-primary text-primary-foreground;
+  }
+  
+  .priority-low {
+    @apply bg-secondary text-secondary-foreground;
+  }
+  
+  .priority-none {
+    @apply bg-muted text-muted-foreground;
+  }
+  
+  /* Kanban Column Headers */
+  .column-todo {
+    @apply border-l-4 border-l-muted-foreground/30;
+  }
+  
+  .column-progress {
+    @apply border-l-4 border-l-secondary;
+  }
+  
+  .column-review {
+    @apply border-l-4 border-l-accent;
+  }
+  
+  .column-done {
+    @apply border-l-4 border-l-primary;
+  }
+  
+  /* Animations */
+  .animate-bounce-gentle {
+    animation: bounce-gentle 0.5s ease-in-out;
+  }
+  
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes bounce-gentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+  }
+  
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: var(--shadow-soft); }
+    50% { box-shadow: var(--shadow-glow); }
+  }
+}

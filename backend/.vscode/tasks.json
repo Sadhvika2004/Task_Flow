@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Django server",
+			"type": "shell",
+			"command": "C:/Users/User/Downloads/TaskFlow_Management-main/TaskFlow_Management-main/backend/.venv/Scripts/python.exe",
+			"args": [
+				"manage.py",
+				"runserver"
+			],
+			"isBackground": true,
+			"problemMatcher": [
+				"$django"
+			],
+			"group": "build"
+		}
+	]
+}
