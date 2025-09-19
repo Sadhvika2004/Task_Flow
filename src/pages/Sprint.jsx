@@ -11,6 +11,7 @@ import { KanbanBoard } from "@/components/KanbanBoard";
 
 export default function Sprint() {
   const {
+    activeProject,
     activeSprint,
     getTasksBySprint,
     getTasksByStatus,
@@ -37,6 +38,7 @@ export default function Sprint() {
   }
 
   const sprintTasks = getTasksBySprint(activeSprint.id) || [];
+  const projectIdForSprint = sprintTasks[0]?.project || activeProject?.id || null;
   const completedTasks = sprintTasks.filter(task => task.status === 'done');
   const inProgressTasks = sprintTasks.filter(task => task.status === 'progress');
   const todoTasks = sprintTasks.filter(task => task.status === 'todo');
@@ -153,9 +155,11 @@ export default function Sprint() {
           <TabsContent value="board" className="space-y-0 mt-0">
             <div className="h-full">
               <KanbanBoard
-                activeProject={{ id: 1, name: activeSprint.name, color: 'bg-primary', tasks: sprintTasks.length, active: true }}
+                activeProject={{ id: `sprint-${activeSprint.id}`, name: activeSprint.name, color: 'bg-primary', tasks: sprintTasks.length, active: true }}
                 getTasksByStatus={getTasksByStatusFiltered}
-                onCreateTask={createTask}
+                onCreateTask={(columnId, title, description, _projectId, type, dueDate) =>
+                  createTask(columnId, title, description, projectIdForSprint, type, dueDate, activeSprint.id)
+                }
                 onMoveTask={moveTask}
                 onDeleteTask={deleteTask}
                 onUpdatePriority={updateTaskPriority}

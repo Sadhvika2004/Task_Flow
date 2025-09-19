@@ -66,7 +66,10 @@ export function KanbanBoard({
 
       <div className="grid grid-cols-4 gap-6 h-full">
         {columns.map((column) => {
-          const columnTasks = getTasksByStatus?.(column.id, activeProject?.id) || [];
+          // If activeProject provided, use its tasks; otherwise, show for all projects
+          const baseTasks = activeProject?.id
+            ? getTasksByStatus?.(column.id, activeProject.id) || []
+            : [];
 
           return (
             <div key={column.id} className="flex flex-col">
@@ -74,18 +77,20 @@ export function KanbanBoard({
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-foreground">{column.title}</h3>
                   <Badge variant="secondary" className="text-xs">
-                    {columnTasks.length}
+                    {baseTasks.length}
                   </Badge>
                 </div>
                 <CreateTaskDialog
                   columnId={column.id}
                   columnTitle={column.title}
-                  onCreateTask={onCreateTask}
+                  onCreateTask={(colId, title, desc, _projOverride, type, dueDate) =>
+                    onCreateTask(colId, title, desc, activeProject?.id, type, dueDate)
+                  }
                 />
               </div>
 
               <div className="flex-1 overflow-y-auto">
-                {columnTasks.map((task) => (
+                {baseTasks.map((task) => (
                   <TaskCard key={task.id} task={task} />
                 ))}
               </div>

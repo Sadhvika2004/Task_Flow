@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task, Project
+from .models import Task, Project, Sprint
 from users.serializers import UserProfileSerializer
 
 
@@ -9,6 +9,21 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ["id", "name", "color", "owner", "created_at"]
+
+
+class SprintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sprint
+        fields = [
+            "id",
+            "name",
+            "goal",
+            "status",
+            "start_date",
+            "end_date",
+            "project",
+            "created_at",
+        ]
 
 
 class TaskSerializer(serializers.ModelSerializer):

@@ -19,6 +19,7 @@ import {
   Plus
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useTaskFlow } from "@/hooks/useTaskFlow";
 import { KanbanBoard } from "@/components/KanbanBoard";
 
@@ -33,11 +34,19 @@ const ProjectDetail = () => {
     moveTask, 
     deleteTask, 
     updateTaskPriority, 
-    updateTask 
+    updateTask,
+    switchProject 
   } = useTaskFlow();
 
   const pid = isNaN(projectId) ? projectId : parseInt(projectId);
   const project = projects.find(p => String(p.id) === String(pid));
+  // Ensure global context uses this project so hooks fetch its tasks
+  useEffect(() => {
+    if (project) {
+      switchProject(project.id);
+    }
+  }, [project?.id]);
+  
   if (!project) {
     return (
       <Layout>

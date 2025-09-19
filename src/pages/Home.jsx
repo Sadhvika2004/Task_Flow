@@ -16,20 +16,52 @@ import {
   Star,
   List,
   PlayCircle,
-  BarChart3
+  BarChart3,
+  Trash2
 } from "lucide-react";
 import { useTaskFlow } from "@/hooks/useTaskFlow";
 import { useProfile } from "@/contexts/ProfileContext";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+const API = 'http://127.0.0.1:8000/api';
 
 const Home = () => {
-  const { projects, tasks, createProject, createTask, getTasksByStatus } = useTaskFlow();
+  const { projects, tasks, createProject, createTask, deleteProject, getTasksByStatus } = useTaskFlow();
   const { userProfile } = useProfile();
   const authUser = userProfile || JSON.parse(localStorage.getItem('user') || '{}');
   const navigate = useNavigate();
 
+  // Per-project counts fetched from stats endpoint
+  const [projectCounts, setProjectCounts] = useState({});
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchCounts = async () => {
+      const headers = {};
+      const token = localStorage.getItem('token');
+      if (token) headers['Authorization'] = `Token ${token}`;
+      const entries = await Promise.all(projects.map(async (p) => {
+        try {
+          const res = await fetch(`${API}/tasks/stats/?project=${p.id}`, { headers });
+          if (!res.ok) throw new Error('stats failed');
+          const data = await res.json();
+          return [p.id, data.total || 0];
+        } catch {
+          // fallback: count by project from local state (project-only tasks)
+          const localCount = tasks.filter(t => t.project === p.id).length;
+          return [p.id, localCount];
+        }
+      }));
+      if (!cancelled) setProjectCounts(Object.fromEntries(entries));
+    };
+    if (projects.length) fetchCounts();
+    return () => { cancelled = true; };
+  }, [projects, tasks]);
+
   const completedTasks = tasks.filter(task => task.status === 'done').length;
-  const totalTasks = tasks.length;
+  // Home total = sum of per-project totals to avoid cross-project mixing
+  const totalTasks = Object.values(projectCounts).reduce((a, b) => a + b, 0);
   const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   const recentTasks = tasks.slice(0, 5);
@@ -139,7 +171,7 @@ const Home = () => {
                     <div className={`w-3 h-3 rounded-full ${project.color} shadow-sm`} />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-foreground truncate">{project.name}</h3>
-                      <p className="text-sm text-muted-foreground">{tasks.filter(t => t.project === project.id).length} tasks</p>
+                      <p className="text-sm text-muted-foreground">{projectCounts[project.id] ?? 0} tasks</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {project.active && (
@@ -147,6 +179,19 @@ const Home = () => {
                       )}
                       <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleQuickAddTask(project.id); }}>
                         <Plus className="h-4 w-4 mr-1" /> Add Task
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm(`Delete project "${project.name}"? This will remove its tasks from your view.`)) {
+                            deleteProject(project.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" /> Delete
                       </Button>
                       <FolderKanban className="h-4 w-4 text-muted-foreground" />
                     </div>

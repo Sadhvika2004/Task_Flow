@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, FolderKanban, Bell } from "lucide-react";
+import { Plus, FolderKanban, Bell, Trash2 } from "lucide-react";
 import { CreateProjectDialog } from "./CreateProjectDialog";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { SettingsDialog } from "./SettingsDialog";
@@ -15,7 +15,7 @@ export function Sidebar({ projects, activeProject, onSwitchProject, onCreateProj
   const [settingsOpen, setSettingsOpen] = useState(false);
   const navigate = useNavigate();
   const { userProfile } = useProfile();
-  const { tasks } = useTaskFlow();
+  const { tasks, deleteProject, getProjectTaskTotal } = useTaskFlow();
 
   const handleNotifications = () => {
     toast({
@@ -76,9 +76,25 @@ export function Sidebar({ projects, activeProject, onSwitchProject, onCreateProj
                 <div className={`w-3 h-3 rounded-full ${project.color} shadow-sm`} />
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm text-foreground truncate">{project.name}</h4>
-                  <p className="text-xs text-muted-foreground">{tasks.filter(t => t.project === project.id).length} tasks</p>
+                  <p className="text-xs text-muted-foreground">{getProjectTaskTotal(project.id)} tasks</p>
                 </div>
-                <FolderKanban className="h-4 w-4 text-muted-foreground" />
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-red-600 hover:text-red-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm(`Delete project "${project.name}"? This will remove its tasks from your view.`)) {
+                        deleteProject(project.id);
+                      }
+                    }}
+                    title="Delete project"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                  <FolderKanban className="h-4 w-4 text-muted-foreground" />
+                </div>
               </div>
             </Card>
           ))}

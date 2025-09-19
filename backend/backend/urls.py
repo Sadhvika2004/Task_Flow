@@ -21,12 +21,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
 from rest_framework import routers
-from tasks.views import TaskViewSet, ProjectViewSet
+from tasks.views import TaskViewSet, ProjectViewSet, SprintViewSet
 from users.views import UserProfileViewSet, AuthViewSet
 from analytics.views import AnalyticsRecordViewSet
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet, basename='project')
+router.register(r'sprints', SprintViewSet, basename='sprint')
 router.register(r'tasks', TaskViewSet, basename='task')
 router.register(r'users', UserProfileViewSet, basename='userprofile')
 router.register(r'analytics', AnalyticsRecordViewSet, basename='analytics')

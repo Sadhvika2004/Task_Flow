@@ -13,6 +13,25 @@ class Project(models.Model):
         return self.name
 
 
+class Sprint(models.Model):
+    STATUS_CHOICES = [
+        ("planned", "Planned"),
+        ("active", "Active"),
+        ("completed", "Completed"),
+    ]
+
+    name = models.CharField(max_length=255)
+    goal = models.TextField(blank=True)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default="planned")
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="sprints")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Task(models.Model):
     STATUS_CHOICES = [
         ("todo", "To Do"),
@@ -43,6 +62,7 @@ class Task(models.Model):
 
     assigned_to = models.ForeignKey('users.UserProfile', on_delete=models.SET_NULL, null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks", null=True, blank=True)
+    sprint = models.ForeignKey('Sprint', on_delete=models.SET_NULL, null=True, blank=True, related_name="tasks")
 
     def __str__(self):
         return self.title
