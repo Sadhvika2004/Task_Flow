@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, List, PlayCircle, BarChart3, Settings } from "lucide-react";
+import { LayoutDashboard, List, PlayCircle, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [

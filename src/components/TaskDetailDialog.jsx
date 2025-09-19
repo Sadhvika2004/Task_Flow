@@ -23,7 +23,16 @@ export function TaskDetailDialog({ task, open, onOpenChange, onUpdateTask, onDel
 
   const handleSave = () => {
     if (editedTask && onUpdateTask) {
-      onUpdateTask(editedTask.id, editedTask);
+      // Ensure we send camelCase fields expected by hook
+      const payload = {
+        title: editedTask.title,
+        description: editedTask.description,
+        priority: editedTask.priority,
+        status: editedTask.status,
+        // Prefer editedTask.dueDate; fall back to editedTask.due_date if present
+        dueDate: editedTask.dueDate ?? editedTask.due_date ?? '',
+      };
+      onUpdateTask(editedTask.id, payload);
       toast({
         title: "Task updated",
         description: "Your changes have been saved",
@@ -158,10 +167,18 @@ export function TaskDetailDialog({ task, open, onOpenChange, onUpdateTask, onDel
                 <Calendar className="h-4 w-4" />
                 Due Date
               </Label>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">{displayTask.dueDate}</span>
-              </div>
+              {isEditing ? (
+                <Input
+                  type="date"
+                  value={(displayTask.dueDate || displayTask.due_date || '').slice(0,10)}
+                  onChange={(e) => setEditedTask(prev => prev ? { ...prev, dueDate: e.target.value } : null)}
+                />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{displayTask.dueDate || displayTask.due_date || 'No due date'}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -203,9 +220,28 @@ export function TaskDetailDialog({ task, open, onOpenChange, onUpdateTask, onDel
           {/* Status */}
           <div className="space-y-2">
             <Label className="text-foreground">Status</Label>
-            <Badge variant="outline" className="capitalize">
-              {displayTask.status.replace('-', ' ')}
-            </Badge>
+            {isEditing ? (
+              <Select value={displayTask.status} onValueChange={(value) => setEditedTask(prev => prev ? { ...prev, status: value } : null)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todo">To Do</SelectItem>
+                  <SelectItem value="progress">In Progress</SelectItem>
+                  <SelectItem value="review">Review</SelectItem>
+                  <SelectItem value="done">Done</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <Badge variant="outline" className="capitalize">
+                {displayTask.status.replace('-', ' ')}
+              </Badge>
+            )}
+            {displayTask.status === 'done' && (displayTask.completed_at || displayTask.completedAt || displayTask.completed_date) && (
+              <div className="text-xs text-muted-foreground mt-1">
+                Completed: {new Date(displayTask.completed_at || displayTask.completedAt || displayTask.completed_date).toLocaleString()}
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>

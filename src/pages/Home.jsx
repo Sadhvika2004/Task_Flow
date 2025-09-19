@@ -23,7 +23,7 @@ import { useProfile } from "@/contexts/ProfileContext";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const { projects, tasks, createProject, getTasksByStatus } = useTaskFlow();
+  const { projects, tasks, createProject, createTask, getTasksByStatus } = useTaskFlow();
   const { userProfile } = useProfile();
   const authUser = userProfile || JSON.parse(localStorage.getItem('user') || '{}');
   const navigate = useNavigate();
@@ -37,6 +37,15 @@ const Home = () => {
 
   const handleProjectClick = (projectId) => {
     navigate(`/project/${projectId}`);
+  };
+
+  const handleQuickAddTask = async (projectId) => {
+    const title = prompt('Task title:');
+    if (!title) return;
+    const description = prompt('Description (optional):') || '';
+    const dueDate = prompt('Due date (YYYY-MM-DD, optional):') || '';
+    // Default to To-Do column for quick add
+    await createTask('todo', title, description, projectId, 'task', dueDate);
   };
 
   const handleCreateProject = () => {
@@ -136,6 +145,9 @@ const Home = () => {
                       {project.active && (
                         <Badge variant="default" className="text-xs">Active</Badge>
                       )}
+                      <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); handleQuickAddTask(project.id); }}>
+                        <Plus className="h-4 w-4 mr-1" /> Add Task
+                      </Button>
                       <FolderKanban className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>

@@ -21,7 +21,22 @@ export default function Sprint() {
     moveTask
   } = useTaskFlow();
 
-  const sprintTasks = getTasksBySprint(activeSprint.id);
+  // Check if activeSprint exists
+  if (!activeSprint) {
+    return (
+      <Layout showAnalytics={false}>
+        <div className="flex-1 p-6 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-foreground mb-4">No Active Sprint</h2>
+            <p className="text-muted-foreground mb-6">There is currently no active sprint. Create or start a sprint to view the sprint board.</p>
+            <Button>Create Sprint</Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  const sprintTasks = getTasksBySprint(activeSprint.id) || [];
   const completedTasks = sprintTasks.filter(task => task.status === 'done');
   const inProgressTasks = sprintTasks.filter(task => task.status === 'progress');
   const todoTasks = sprintTasks.filter(task => task.status === 'todo');
@@ -36,6 +51,7 @@ export default function Sprint() {
   };
 
   const getDaysRemaining = () => {
+    if (!activeSprint.endDate) return 0;
     const endDate = new Date(activeSprint.endDate);
     const today = new Date();
     const diffTime = endDate.getTime() - today.getTime();
@@ -99,92 +115,92 @@ export default function Sprint() {
     <Layout showAnalytics={false}>
       <div className="flex-1 p-6 overflow-hidden">
         <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground mb-1">{activeSprint.name}</h1>
-            <p className="text-muted-foreground">{activeSprint.goal}</p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground mb-1">{activeSprint.name}</h1>
+              <p className="text-muted-foreground">{activeSprint.goal}</p>
+            </div>
+            <Badge
+              variant={activeSprint.status === 'active' ? 'default' : 'secondary'}
+              className="capitalize"
+            >
+              {activeSprint.status}
+            </Badge>
           </div>
-          <Badge 
-            variant={activeSprint.status === 'active' ? 'default' : 'secondary'}
-            className="capitalize"
-          >
-            {activeSprint.status}
-          </Badge>
+
+          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+            <div className="flex items-center gap-1">
+              <Calendar className="h-4 w-4" />
+              <span>{activeSprint.startDate} - {activeSprint.endDate}</span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Sprint Progress</span>
+              <span className="text-foreground font-medium">{Math.round(progressPercentage)}%</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2" />
+          </div>
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            <span>{activeSprint.startDate} - {activeSprint.endDate}</span>
-          </div>
-        </div>
+        <Tabs defaultValue="board" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="board">Sprint Board</TabsTrigger>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+          </TabsList>
 
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Sprint Progress</span>
-            <span className="text-foreground font-medium">{Math.round(progressPercentage)}%</span>
-          </div>
-          <Progress value={progressPercentage} className="h-2" />
-        </div>
-      </div>
+          <TabsContent value="board" className="space-y-0 mt-0">
+            <div className="h-full">
+              <KanbanBoard
+                activeProject={{ id: 1, name: activeSprint.name, color: 'bg-primary', tasks: sprintTasks.length, active: true }}
+                getTasksByStatus={getTasksByStatusFiltered}
+                onCreateTask={createTask}
+                onMoveTask={moveTask}
+                onDeleteTask={deleteTask}
+                onUpdatePriority={updateTaskPriority}
+                onUpdateTask={updateTask}
+              />
+            </div>
+          </TabsContent>
 
-      <Tabs defaultValue="board" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 max-w-md">
-          <TabsTrigger value="board">Sprint Board</TabsTrigger>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-        </TabsList>
+          <TabsContent value="overview" className="space-y-6">
+            <SprintStats />
 
-        <TabsContent value="board" className="space-y-0 mt-0">
-          <div className="h-full">
-            <KanbanBoard
-              activeProject={{ id: 1, name: activeSprint.name, color: 'bg-primary', tasks: sprintTasks.length, active: true }}
-              getTasksByStatus={getTasksByStatusFiltered}
-              onCreateTask={createTask}
-              onMoveTask={moveTask}
-              onDeleteTask={deleteTask}
-              onUpdatePriority={updateTaskPriority}
-              onUpdateTask={updateTask}
-            />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="overview" className="space-y-6">
-          <SprintStats />
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Sprint Burndown would go here */}
-            <Card className="p-6 card-soft">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Sprint Burndown</h3>
-              <div className="h-64 flex items-center justify-center text-muted-foreground">
-                <p>Burndown chart visualization would appear here</p>
-              </div>
-            </Card>
-
-            {/* Issue Breakdown */}
-            <Card className="p-6 card-soft">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Issue Breakdown</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">To Do</span>
-                  <Badge variant="outline">{todoTasks.length}</Badge>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Sprint Burndown would go here */}
+              <Card className="p-6 card-soft">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Sprint Burndown</h3>
+                <div className="h-64 flex items-center justify-center text-muted-foreground">
+                  <p>Burndown chart visualization would appear here</p>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">In Progress</span>
-                  <Badge variant="outline">{inProgressTasks.length}</Badge>
+              </Card>
+
+              {/* Issue Breakdown */}
+              <Card className="p-6 card-soft">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Issue Breakdown</h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">To Do</span>
+                    <Badge variant="outline">{todoTasks.length}</Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">In Progress</span>
+                    <Badge variant="outline">{inProgressTasks.length}</Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Review</span>
+                    <Badge variant="outline">{reviewTasks.length}</Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Done</span>
+                    <Badge variant="outline">{completedTasks.length}</Badge>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Review</span>
-                  <Badge variant="outline">{reviewTasks.length}</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Done</span>
-                  <Badge variant="outline">{completedTasks.length}</Badge>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );

@@ -12,13 +12,15 @@ export function CreateTaskDialog({ columnId, columnTitle, onCreateTask }) {
   const [open, setOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
+  const [dueDate, setDueDate] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (taskTitle.trim()) {
-      onCreateTask(columnId, taskTitle.trim(), taskDescription.trim());
+      onCreateTask(columnId, taskTitle.trim(), taskDescription.trim(), undefined, 'task', dueDate);
       setTaskTitle('');
       setTaskDescription('');
+      setDueDate('');
       setOpen(false);
     }
   };
@@ -60,6 +62,16 @@ export function CreateTaskDialog({ columnId, columnTitle, onCreateTask }) {
               placeholder="Add task description..."
               className="w-full resize-none"
               rows={3}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="due-date" className="text-foreground">Due Date</Label>
+            <Input
+              id="due-date"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full"
             />
           </div>
           <div className="flex gap-2 justify-end">

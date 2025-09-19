@@ -90,8 +90,8 @@ export function Sidebar({ projects, activeProject, onSwitchProject, onCreateProj
         <CreateProjectDialog onCreateProject={onCreateProject} />
       </div>
 
-      {/* Settings Dialog */}
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      {/* Settings Dialog disabled per requirements */}
+      {/* <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} /> */}
     </div>
   );
 }

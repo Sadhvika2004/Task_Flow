@@ -45,8 +45,9 @@ TaskFlow is a friendly, full-stack task management system with a modern React fr
 
 ## Project Structure
 
-- `frontend/` — React app (see `src/` for components, pages, hooks, etc.)
-- `backend/` — Django project (apps: analytics, tasks, users)
+- `src/` — React frontend source code (components, pages, hooks, etc.)
+- `backend/` — Django backend project (apps: analytics, tasks, users)
+- `public/` — Static assets for the React app
 
 ---
 
@@ -63,25 +64,24 @@ TaskFlow is a friendly, full-stack task management system with a modern React fr
 - npm
 
 ### Frontend Setup & Installation
-1. Navigate to the `frontend/` directory (if not already there).
-2. Install dependencies:
+1. Install dependencies:
    ```sh
    npm install
    ```
-3. Start the development server:
+2. Start the development server:
    ```sh
    npm run dev
    ```
    - App runs at: http://localhost:8080
-4. Build for production:
+3. Build for production:
    ```sh
    npm run build
    ```
-5. Preview the production build:
+4. Preview the production build:
    ```sh
    npm run preview
    ```
-6. Lint the project:
+5. Lint the project:
    ```sh
    npm run lint
    ```
@@ -111,21 +111,25 @@ TaskFlow is a friendly, full-stack task management system with a modern React fr
 ### Backend Requirements
 - Python 3.12+
 - pip
-- PostgreSQL
+- PostgreSQL (with database named 'taskflow_db' and user 'postgres')
 
 ### Backend Setup & Installation
 1. Navigate to the `backend/` directory.
-2. (Recommended) Create and activate a virtual environment:
+2. Activate the existing virtual environment:
    ```sh
-   python -m venv .venv
-   .venv\Scripts\activate  # On Windows
-   source .venv/bin/activate  # On macOS/Linux
+   .venv\Scripts\Activate.ps1  # On Windows PowerShell
+   .venv\Scripts\activate.bat  # On Windows Command Prompt
+   source .venv/bin/activate   # On macOS/Linux
    ```
 3. Install dependencies:
    ```sh
    pip install -r requirements.txt
    ```
-4. Configure PostgreSQL credentials in `backend/settings.py`.
+4. Set up PostgreSQL database:
+   - Ensure PostgreSQL is running
+   - Create database named 'taskflow_db'
+   - Create user 'postgres' with appropriate permissions
+   - Update database credentials in `backend/settings.py` if needed
 5. Run migrations:
    ```sh
    python manage.py makemigrations
@@ -135,6 +139,7 @@ TaskFlow is a friendly, full-stack task management system with a modern React fr
    ```sh
    python manage.py runserver
    ```
+   - API runs at: http://127.0.0.1:8000
 
 ### API Endpoints
 - `/api/tasks/` — Task management
@@ -152,6 +157,51 @@ Connect your React frontend to these endpoints using fetch or axios. Ensure CORS
 - `python manage.py runserver` — Start backend server
 - `python manage.py makemigrations` — Create new migrations
 - `python manage.py migrate` — Apply migrations
+
+---
+
+## Running the Full Project
+
+To run both frontend and backend simultaneously:
+
+### Option 1: Manual Setup
+1. **Terminal 1 - Frontend:**
+   ```sh
+   cd /path/to/project
+   npm install
+   npm run dev
+   ```
+   - Frontend runs at: http://localhost:8080
+
+2. **Terminal 2 - Backend:**
+   ```sh
+   cd backend/
+   .venv\Scripts\Activate.ps1  # Windows PowerShell
+   pip install -r requirements.txt
+   python manage.py runserver
+   ```
+   - Backend runs at: http://127.0.0.1:8000
+
+### Option 2: Using Scripts (Recommended)
+Create the following scripts in your project root:
+
+**run-frontend.bat** (Windows):
+```batch
+@echo off
+npm install
+npm run dev
+```
+
+**run-backend.bat** (Windows):
+```batch
+@echo off
+cd backend
+.venv\Scripts\activate.bat
+pip install -r requirements.txt
+python manage.py runserver
+```
+
+Then run both scripts in separate terminals.
 
 ---
 

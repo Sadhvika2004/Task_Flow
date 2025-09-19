@@ -154,17 +154,22 @@ const ProjectDetail = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="tasks" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
-            <TabsTrigger value="timeline">Timeline</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="tasks" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-foreground">Project Tasks</h2>
-              <Button>
+              <Button onClick={() => {
+                const title = prompt('Task title:');
+                if (!title) return;
+                const description = prompt('Description (optional):') || '';
+                const dueDate = prompt('Due date (YYYY-MM-DD, optional):') || '';
+                // Default new tasks to To-Do column
+                createTask('todo', title, description, project.id, 'task', dueDate);
+              }}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Task
               </Button>
@@ -201,48 +206,9 @@ const ProjectDetail = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="timeline" className="space-y-6">
-            <h2 className="text-xl font-semibold text-foreground">Project Timeline</h2>
-            <div className="space-y-4">
-              <Card className="p-4 card-soft">
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-primary" />
-                  <div>
-                    <h3 className="font-medium text-foreground">Project Start</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(projectDetails.startDate).toLocaleDateString('en-US', { 
-                        month: 'long', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                      })}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-4 card-soft">
-                <div className="flex items-center gap-3">
-                  <Target className="h-5 w-5 text-primary" />
-                  <div>
-                    <h3 className="font-medium text-foreground">Project End</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(projectDetails.endDate).toLocaleDateString('en-US', { 
-                        month: 'long', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                      })}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </TabsContent>
 
-          <TabsContent value="settings" className="space-y-6">
-            <h2 className="text-xl font-semibold text-foreground">Project Settings</h2>
-            <Card className="p-6 card-soft">
-              <p className="text-muted-foreground">Project settings and configuration options will be available here.</p>
-            </Card>
-          </TabsContent>
+
+
         </Tabs>
       </div>
     </Layout>
